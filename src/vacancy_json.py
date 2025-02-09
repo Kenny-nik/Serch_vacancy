@@ -1,20 +1,16 @@
 import json
-
 import os
-
-from idlelib.iomenu import encoding
-
-from src.abstract_classes import AbstactEditJson
+from typing import Any, Dict, List
 
 from config import PATH_TO_JSON
-
+from src.abstract_classes import AbstractEditJson
 from src.vacancy import Vacancy
 
 
+class EditJson(AbstractEditJson):
+    """Класс для работы с JSON-файлами"""
 
-class EditJson(AbstactEditJson):
-
-    def __init__(self, file_name = "vacancies.json"):
+    def __init__(self, file_name="vacancies.json") -> None:
         self.__file_name = file_name
         self.path_to_file = os.path.join(PATH_TO_JSON, self.__file_name)
 
@@ -23,15 +19,18 @@ class EditJson(AbstactEditJson):
             with open(self.path_to_file, "w", encoding="utf-8") as file:
                 json.dump([], file)
 
-    def _reading_data (self):
+    def _reading_data(self) -> List[Dict[str, Any]]:
+        """Чтение данных из JSON-файла"""
         with open(self.path_to_file, "r", encoding="utf-8") as file:
-            json.load(file)
+            return json.load(file)
 
-    def _saving_data (self, data):
+    def _saving_data(self, data: List[Dict[str, Any]]) -> None:
+        """Сохранение данных в JSON-файл"""
         with open(self.path_to_file, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
 
-    def save_to_file(self, vacancies):
+    def save_to_file(self, vacancies: List[Vacancy]) -> None:
+        """Метод сохраняющий список вакансий в JSON-файл"""
         data = self._reading_data()
         for vacancy in vacancies:
             data.append(
@@ -40,18 +39,18 @@ class EditJson(AbstactEditJson):
                     "url": vacancy.url,
                     "area": vacancy.area,
                     "salary": vacancy.salary,
-                    "description": vacancy.description
+                    "description": vacancy.description,
                 }
             )
         self._saving_data(data)
 
-
-    def get_vacancies(self):
+    def get_vacancies(self) -> List[Vacancy]:
+        """Метод получает список вакансий из файла"""
         data = self._reading_data()
         return [Vacancy(**item) for item in data]
 
-
-    def add_vacancies(self, vacancy: Vacancy):
+    def add_vacancy(self, vacancy: Vacancy) -> None:
+        """Метод добавляет вакансии в существующий файл"""
         data = self._reading_data()
         data.append(
             {
@@ -59,19 +58,18 @@ class EditJson(AbstactEditJson):
                 "url": vacancy.url,
                 "area": vacancy.area,
                 "salary": vacancy.salary,
-                "description": vacancy.description
+                "description": vacancy.description,
             }
         )
         self._saving_data(data)
 
-
-    def delete_vacancies(self, vacancy_name):
+    def delete_vacancy(self, vacancy_name: str) -> None:
+        """Метод удаляет выбранную вакансию"""
         data = self._reading_data()
         data = [item for item in data if item["name"] != vacancy_name]
         self._saving_data(data)
 
-
-    def deleting_vacancies (self):
+    def deleting_vacancies(self) -> None:
+        """Метод очищает JSON-файл"""
         with open(self.path_to_file, "w", encoding="utf-8") as file:
             json.dump([], file, ensure_ascii=False, indent=4)
-

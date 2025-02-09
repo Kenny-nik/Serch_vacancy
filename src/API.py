@@ -6,7 +6,7 @@ from src.abstract_classes import AbstractApi
 class VacanciesRequest(AbstractApi):
     """Класс для поиска вакансий с помощью API"""
 
-    def init(self) -> None:
+    def __init__(self) -> None:
         self.__url = "https://api.hh.ru/vacancies"
         self.__headers = {"User-Agent": "HH-User-Agent"}
         self.__params = {"text": "", "page": 0, "per_page": 100}
